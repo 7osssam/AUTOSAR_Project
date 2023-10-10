@@ -1,0 +1,41 @@
+{
+	"configurations": [
+		{
+			"name": "ARM",
+			"intelliSenseMode": "${default}",
+			"compilerPath": "C:/Program Files/IAR Systems/Embedded Workbench 9.1/arm/bin/iccarm.exe",
+			//"configurationProvider": "iar-vsc.json",
+			"includePath": [
+				"${workspaceFolder}/**",
+				"${workspaceFolder}/LIB/**",
+				"${workspaceFolder}/PORT/**",
+				"${workspaceFolder}/DIO/**",
+				"${workspaceFolder}/DET/**"
+			],
+			"compilerArgs": [
+				"--c99",
+				"--thumb",
+				"--cpu=Cortex-M4",
+				"--dlib_config=normal",
+				"--fp_mode=softfp",
+				"--no_warnings",
+				"--diag_suppress=Pa050"
+			],
+			"defines": [
+				"TM4C123GH6PM"
+			],
+			"browse": {
+				"path": [
+					"${workspaceFolder}/",
+					"${workspaceFolder}/LIB/",
+					"${workspaceFolder}/PORT/",
+					"${workspaceFolder}/DIO/",
+					"${workspaceFolder}/DET/"
+				]
+			},
+			"cStandard": "c99",
+			"cppStandard": "c++98"
+		}
+	],
+	"version": 4
+}

@@ -1,0 +1,17 @@
+{
+	"C_Cpp.default.configurationProvider": "iarsystems.iar-build",
+	// hide .ctu-info and .dump files from the explorer (CPPCheck dump files)
+	"files.exclude": {
+		// cppcheck files
+		"**/*.ctu-info": true,
+		"**/*.dump": true,
+		"cppcheck-addon-ctu-file-list": true,
+		// IAR files
+		"**/*.dep": true,
+		"**/*.ewd": true,
+		"**/*.ewp": true,
+		"**/*.ewt": true,
+		//"**/*.eww": true,
+	},
+	"cmake.configureOnOpen": false,
+}

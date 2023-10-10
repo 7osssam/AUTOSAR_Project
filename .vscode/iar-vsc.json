@@ -1,0 +1,18 @@
+{
+  "workspace": {
+    "path": "${workspaceFolder}\\AUTOSAR.eww"
+  },
+  "workbench": {
+    "path": "C:\\\\Program Files\\\\IAR Systems\\\\Embedded Workbench 9.1"
+  },
+  "workspaces": {
+    "${workspaceFolder}\\AUTOSAR.eww": {
+      "configs": {
+        "${workspaceFolder}\\AUTOSAR.ewp": "Debug"
+      },
+      "selected": {
+        "path": "${workspaceFolder}\\AUTOSAR.ewp"
+      }
+    }
+  }
+}

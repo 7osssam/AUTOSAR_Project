@@ -1,0 +1,6 @@
+{
+  "script": "addons/misra.py",
+  "args": [
+    "--rule-texts=.vscode/cppcheck_misra/misra-2012.txt"
+  ]
+}

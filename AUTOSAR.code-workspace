@@ -1,0 +1,24 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"iar.enabled": true,
+		"files.associations": {
+			"*.c": "c",
+			".clang-format": "yaml",
+			"tm4c123gh6pm_registers.h": "c",
+			"type_traits": "c"
+		},
+		"c-cpp-flylint.includePaths": [
+			"${workspaceFolder}/",
+			"${workspaceFolder}/LIB/",
+			"${workspaceFolder}/PORT/",
+			"${workspaceFolder}/DIO/",
+			"${workspaceFolder}/DET/"
+		],
+		"iar-build.c-stat.showInToolbar": true,
+	}
+}
