@@ -175,11 +175,11 @@
 #define PortConf_PA6_PIN_DIRECTION		   (Port_PinDirectionType) PORT_PIN_IN
 #define PortConf_PA7_PIN_DIRECTION		   (Port_PinDirectionType) PORT_PIN_IN
 #define PortConf_PB0_PIN_DIRECTION		   (Port_PinDirectionType) PORT_PIN_IN
-#define PortConf_PB1_PIN_DIRECTION		   (Port_PinDirectionType) PORT_PIN_OUT
+#define PortConf_PB1_PIN_DIRECTION		   (Port_PinDirectionType) PORT_PIN_IN
 #define PortConf_PB2_PIN_DIRECTION		   (Port_PinDirectionType) PORT_PIN_IN
 #define PortConf_PB3_PIN_DIRECTION		   (Port_PinDirectionType) PORT_PIN_IN
 #define PortConf_PB4_PIN_DIRECTION		   (Port_PinDirectionType) PORT_PIN_IN
-#define PortConf_PB5_PIN_DIRECTION		   (Port_PinDirectionType) PORT_PIN_OUT
+#define PortConf_PB5_PIN_DIRECTION		   (Port_PinDirectionType) PORT_PIN_IN
 #define PortConf_PB6_PIN_DIRECTION		   (Port_PinDirectionType) PORT_PIN_IN
 #define PortConf_PB7_PIN_DIRECTION		   (Port_PinDirectionType) PORT_PIN_IN
 #define PortConf_PC4_PIN_DIRECTION		   (Port_PinDirectionType) PORT_PIN_IN
@@ -201,9 +201,9 @@
 #define PortConf_PE4_PIN_DIRECTION		   (Port_PinDirectionType) PORT_PIN_IN
 #define PortConf_PE5_PIN_DIRECTION		   (Port_PinDirectionType) PORT_PIN_IN
 #define PortConf_PF0_PIN_DIRECTION		   (Port_PinDirectionType) PORT_PIN_IN
-#define PortConf_PF1_PIN_DIRECTION		   (Port_PinDirectionType) PORT_PIN_OUT
-#define PortConf_PF2_PIN_DIRECTION		   (Port_PinDirectionType) PORT_PIN_OUT
-#define PortConf_PF3_PIN_DIRECTION		   (Port_PinDirectionType) PORT_PIN_OUT
+#define PortConf_PF1_PIN_DIRECTION		   (Port_PinDirectionType) PORT_PIN_OUT /* LED1 */
+#define PortConf_PF2_PIN_DIRECTION		   (Port_PinDirectionType) PORT_PIN_OUT /* LED2 */
+#define PortConf_PF3_PIN_DIRECTION		   (Port_PinDirectionType) PORT_PIN_OUT /* LED3 */
 #define PortConf_PF4_PIN_DIRECTION		   (Port_PinDirectionType) PORT_PIN_IN
 
 /* 
@@ -290,10 +290,10 @@
 #define PortConf_PE4_PIN_INTERNAL_RESISTOR (Port_InternalResistorType) PULL_UP
 #define PortConf_PE5_PIN_INTERNAL_RESISTOR (Port_InternalResistorType) PULL_UP
 #define PortConf_PF0_PIN_INTERNAL_RESISTOR (Port_InternalResistorType) PULL_UP
-#define PortConf_PF1_PIN_INTERNAL_RESISTOR (Port_InternalResistorType) PULL_UP /* LED */
-#define PortConf_PF2_PIN_INTERNAL_RESISTOR (Port_InternalResistorType) OFF
-#define PortConf_PF3_PIN_INTERNAL_RESISTOR (Port_InternalResistorType) OFF
-#define PortConf_PF4_PIN_INTERNAL_RESISTOR (Port_InternalResistorType) PULL_UP
+#define PortConf_PF1_PIN_INTERNAL_RESISTOR (Port_InternalResistorType) OFF	   /* LED */
+#define PortConf_PF2_PIN_INTERNAL_RESISTOR (Port_InternalResistorType) OFF	   /* LED */
+#define PortConf_PF3_PIN_INTERNAL_RESISTOR (Port_InternalResistorType) OFF	   /* LED */
+#define PortConf_PF4_PIN_INTERNAL_RESISTOR (Port_InternalResistorType) PULL_UP /* SW1 */
 
 /* 
  * PORT Configured Pin Initial Value 
@@ -335,97 +335,97 @@
 #define PortConf_PE4_PIN_INITIAL_VALUE	   STD_LOW
 #define PortConf_PE5_PIN_INITIAL_VALUE	   STD_LOW
 #define PortConf_PF0_PIN_INITIAL_VALUE	   STD_LOW
-#define PortConf_PF1_PIN_INITIAL_VALUE	   STD_HIGH /* LED */
+#define PortConf_PF1_PIN_INITIAL_VALUE	   STD_LOW /* LED */
 #define PortConf_PF2_PIN_INITIAL_VALUE	   STD_LOW
 #define PortConf_PF3_PIN_INITIAL_VALUE	   STD_LOW
-#define PortConf_PF4_PIN_INITIAL_VALUE	   STD_LOW
+#define PortConf_PF4_PIN_INITIAL_VALUE	   STD_HIGH /* SW1 - Button released */
 
 /* 
  * PORT Configured Pin Direction changeability
  * by default all pins are changeable  
  */
-#define PortConf_PA0_PIN_DIRECTION_CHANGE  (Port_changeable) CHANGEABLE
-#define PortConf_PA1_PIN_DIRECTION_CHANGE  (Port_changeable) CHANGEABLE
-#define PortConf_PA2_PIN_DIRECTION_CHANGE  (Port_changeable) CHANGEABLE
-#define PortConf_PA3_PIN_DIRECTION_CHANGE  (Port_changeable) CHANGEABLE
-#define PortConf_PA4_PIN_DIRECTION_CHANGE  (Port_changeable) CHANGEABLE
-#define PortConf_PA5_PIN_DIRECTION_CHANGE  (Port_changeable) CHANGEABLE
-#define PortConf_PA6_PIN_DIRECTION_CHANGE  (Port_changeable) CHANGEABLE
-#define PortConf_PA7_PIN_DIRECTION_CHANGE  (Port_changeable) CHANGEABLE
-#define PortConf_PB0_PIN_DIRECTION_CHANGE  (Port_changeable) CHANGEABLE
-#define PortConf_PB1_PIN_DIRECTION_CHANGE  (Port_changeable) CHANGEABLE
-#define PortConf_PB2_PIN_DIRECTION_CHANGE  (Port_changeable) CHANGEABLE
-#define PortConf_PB3_PIN_DIRECTION_CHANGE  (Port_changeable) CHANGEABLE
-#define PortConf_PB4_PIN_DIRECTION_CHANGE  (Port_changeable) CHANGEABLE
-#define PortConf_PB5_PIN_DIRECTION_CHANGE  (Port_changeable) CHANGEABLE
-#define PortConf_PB6_PIN_DIRECTION_CHANGE  (Port_changeable) CHANGEABLE
-#define PortConf_PB7_PIN_DIRECTION_CHANGE  (Port_changeable) CHANGEABLE
-#define PortConf_PC4_PIN_DIRECTION_CHANGE  (Port_changeable) CHANGEABLE
-#define PortConf_PC5_PIN_DIRECTION_CHANGE  (Port_changeable) CHANGEABLE
-#define PortConf_PC6_PIN_DIRECTION_CHANGE  (Port_changeable) CHANGEABLE
-#define PortConf_PC7_PIN_DIRECTION_CHANGE  (Port_changeable) CHANGEABLE
-#define PortConf_PD0_PIN_DIRECTION_CHANGE  (Port_changeable) CHANGEABLE
-#define PortConf_PD1_PIN_DIRECTION_CHANGE  (Port_changeable) CHANGEABLE
-#define PortConf_PD2_PIN_DIRECTION_CHANGE  (Port_changeable) CHANGEABLE
-#define PortConf_PD3_PIN_DIRECTION_CHANGE  (Port_changeable) CHANGEABLE
-#define PortConf_PD4_PIN_DIRECTION_CHANGE  (Port_changeable) CHANGEABLE
-#define PortConf_PD5_PIN_DIRECTION_CHANGE  (Port_changeable) CHANGEABLE
-#define PortConf_PD6_PIN_DIRECTION_CHANGE  (Port_changeable) CHANGEABLE
-#define PortConf_PD7_PIN_DIRECTION_CHANGE  (Port_changeable) CHANGEABLE
-#define PortConf_PE0_PIN_DIRECTION_CHANGE  (Port_changeable) CHANGEABLE
-#define PortConf_PE1_PIN_DIRECTION_CHANGE  (Port_changeable) CHANGEABLE
-#define PortConf_PE2_PIN_DIRECTION_CHANGE  (Port_changeable) CHANGEABLE
-#define PortConf_PE3_PIN_DIRECTION_CHANGE  (Port_changeable) CHANGEABLE
-#define PortConf_PE4_PIN_DIRECTION_CHANGE  (Port_changeable) CHANGEABLE
-#define PortConf_PE5_PIN_DIRECTION_CHANGE  (Port_changeable) CHANGEABLE
-#define PortConf_PF0_PIN_DIRECTION_CHANGE  (Port_changeable) CHANGEABLE
-#define PortConf_PF1_PIN_DIRECTION_CHANGE  (Port_changeable) CHANGEABLE
-#define PortConf_PF2_PIN_DIRECTION_CHANGE  (Port_changeable) CHANGEABLE
-#define PortConf_PF3_PIN_DIRECTION_CHANGE  (Port_changeable) CHANGEABLE
-#define PortConf_PF4_PIN_DIRECTION_CHANGE  (Port_changeable) CHANGEABLE
+#define PortConf_PA0_PIN_DIRECTION_CHANGE  (Port_changeable) NOT_CHANGEABLE
+#define PortConf_PA1_PIN_DIRECTION_CHANGE  (Port_changeable) NOT_CHANGEABLE
+#define PortConf_PA2_PIN_DIRECTION_CHANGE  (Port_changeable) NOT_CHANGEABLE
+#define PortConf_PA3_PIN_DIRECTION_CHANGE  (Port_changeable) NOT_CHANGEABLE
+#define PortConf_PA4_PIN_DIRECTION_CHANGE  (Port_changeable) NOT_CHANGEABLE
+#define PortConf_PA5_PIN_DIRECTION_CHANGE  (Port_changeable) NOT_CHANGEABLE
+#define PortConf_PA6_PIN_DIRECTION_CHANGE  (Port_changeable) NOT_CHANGEABLE
+#define PortConf_PA7_PIN_DIRECTION_CHANGE  (Port_changeable) NOT_CHANGEABLE
+#define PortConf_PB0_PIN_DIRECTION_CHANGE  (Port_changeable) NOT_CHANGEABLE
+#define PortConf_PB1_PIN_DIRECTION_CHANGE  (Port_changeable) NOT_CHANGEABLE
+#define PortConf_PB2_PIN_DIRECTION_CHANGE  (Port_changeable) NOT_CHANGEABLE
+#define PortConf_PB3_PIN_DIRECTION_CHANGE  (Port_changeable) NOT_CHANGEABLE
+#define PortConf_PB4_PIN_DIRECTION_CHANGE  (Port_changeable) NOT_CHANGEABLE
+#define PortConf_PB5_PIN_DIRECTION_CHANGE  (Port_changeable) NOT_CHANGEABLE
+#define PortConf_PB6_PIN_DIRECTION_CHANGE  (Port_changeable) NOT_CHANGEABLE
+#define PortConf_PB7_PIN_DIRECTION_CHANGE  (Port_changeable) NOT_CHANGEABLE
+#define PortConf_PC4_PIN_DIRECTION_CHANGE  (Port_changeable) NOT_CHANGEABLE
+#define PortConf_PC5_PIN_DIRECTION_CHANGE  (Port_changeable) NOT_CHANGEABLE
+#define PortConf_PC6_PIN_DIRECTION_CHANGE  (Port_changeable) NOT_CHANGEABLE
+#define PortConf_PC7_PIN_DIRECTION_CHANGE  (Port_changeable) NOT_CHANGEABLE
+#define PortConf_PD0_PIN_DIRECTION_CHANGE  (Port_changeable) NOT_CHANGEABLE
+#define PortConf_PD1_PIN_DIRECTION_CHANGE  (Port_changeable) NOT_CHANGEABLE
+#define PortConf_PD2_PIN_DIRECTION_CHANGE  (Port_changeable) NOT_CHANGEABLE
+#define PortConf_PD3_PIN_DIRECTION_CHANGE  (Port_changeable) NOT_CHANGEABLE
+#define PortConf_PD4_PIN_DIRECTION_CHANGE  (Port_changeable) NOT_CHANGEABLE
+#define PortConf_PD5_PIN_DIRECTION_CHANGE  (Port_changeable) NOT_CHANGEABLE
+#define PortConf_PD6_PIN_DIRECTION_CHANGE  (Port_changeable) NOT_CHANGEABLE
+#define PortConf_PD7_PIN_DIRECTION_CHANGE  (Port_changeable) NOT_CHANGEABLE
+#define PortConf_PE0_PIN_DIRECTION_CHANGE  (Port_changeable) NOT_CHANGEABLE
+#define PortConf_PE1_PIN_DIRECTION_CHANGE  (Port_changeable) NOT_CHANGEABLE
+#define PortConf_PE2_PIN_DIRECTION_CHANGE  (Port_changeable) NOT_CHANGEABLE
+#define PortConf_PE3_PIN_DIRECTION_CHANGE  (Port_changeable) NOT_CHANGEABLE
+#define PortConf_PE4_PIN_DIRECTION_CHANGE  (Port_changeable) NOT_CHANGEABLE
+#define PortConf_PE5_PIN_DIRECTION_CHANGE  (Port_changeable) NOT_CHANGEABLE
+#define PortConf_PF0_PIN_DIRECTION_CHANGE  (Port_changeable) NOT_CHANGEABLE
+#define PortConf_PF1_PIN_DIRECTION_CHANGE  (Port_changeable) NOT_CHANGEABLE
+#define PortConf_PF2_PIN_DIRECTION_CHANGE  (Port_changeable) NOT_CHANGEABLE
+#define PortConf_PF3_PIN_DIRECTION_CHANGE  (Port_changeable) NOT_CHANGEABLE
+#define PortConf_PF4_PIN_DIRECTION_CHANGE  (Port_changeable) NOT_CHANGEABLE
 
 /* 
  * PORT Configured Pin Mode changeability
  * by default all pins are changeable  
  */
-#define PortConf_PA0_PIN_MODE_CHANGE	   (Port_changeable) CHANGEABLE
-#define PortConf_PA1_PIN_MODE_CHANGE	   (Port_changeable) CHANGEABLE
-#define PortConf_PA2_PIN_MODE_CHANGE	   (Port_changeable) CHANGEABLE
-#define PortConf_PA3_PIN_MODE_CHANGE	   (Port_changeable) CHANGEABLE
-#define PortConf_PA4_PIN_MODE_CHANGE	   (Port_changeable) CHANGEABLE
-#define PortConf_PA5_PIN_MODE_CHANGE	   (Port_changeable) CHANGEABLE
-#define PortConf_PA6_PIN_MODE_CHANGE	   (Port_changeable) CHANGEABLE
-#define PortConf_PA7_PIN_MODE_CHANGE	   (Port_changeable) CHANGEABLE
-#define PortConf_PB0_PIN_MODE_CHANGE	   (Port_changeable) CHANGEABLE
-#define PortConf_PB1_PIN_MODE_CHANGE	   (Port_changeable) CHANGEABLE
-#define PortConf_PB2_PIN_MODE_CHANGE	   (Port_changeable) CHANGEABLE
-#define PortConf_PB3_PIN_MODE_CHANGE	   (Port_changeable) CHANGEABLE
-#define PortConf_PB4_PIN_MODE_CHANGE	   (Port_changeable) CHANGEABLE
-#define PortConf_PB5_PIN_MODE_CHANGE	   (Port_changeable) CHANGEABLE
-#define PortConf_PB6_PIN_MODE_CHANGE	   (Port_changeable) CHANGEABLE
-#define PortConf_PB7_PIN_MODE_CHANGE	   (Port_changeable) CHANGEABLE
-#define PortConf_PC4_PIN_MODE_CHANGE	   (Port_changeable) CHANGEABLE
-#define PortConf_PC5_PIN_MODE_CHANGE	   (Port_changeable) CHANGEABLE
-#define PortConf_PC6_PIN_MODE_CHANGE	   (Port_changeable) CHANGEABLE
-#define PortConf_PC7_PIN_MODE_CHANGE	   (Port_changeable) CHANGEABLE
-#define PortConf_PD0_PIN_MODE_CHANGE	   (Port_changeable) CHANGEABLE
-#define PortConf_PD1_PIN_MODE_CHANGE	   (Port_changeable) CHANGEABLE
-#define PortConf_PD2_PIN_MODE_CHANGE	   (Port_changeable) CHANGEABLE
-#define PortConf_PD3_PIN_MODE_CHANGE	   (Port_changeable) CHANGEABLE
-#define PortConf_PD4_PIN_MODE_CHANGE	   (Port_changeable) CHANGEABLE
-#define PortConf_PD5_PIN_MODE_CHANGE	   (Port_changeable) CHANGEABLE
-#define PortConf_PD6_PIN_MODE_CHANGE	   (Port_changeable) CHANGEABLE
-#define PortConf_PD7_PIN_MODE_CHANGE	   (Port_changeable) CHANGEABLE
-#define PortConf_PE0_PIN_MODE_CHANGE	   (Port_changeable) CHANGEABLE
-#define PortConf_PE1_PIN_MODE_CHANGE	   (Port_changeable) CHANGEABLE
-#define PortConf_PE2_PIN_MODE_CHANGE	   (Port_changeable) CHANGEABLE
-#define PortConf_PE3_PIN_MODE_CHANGE	   (Port_changeable) CHANGEABLE
-#define PortConf_PE4_PIN_MODE_CHANGE	   (Port_changeable) CHANGEABLE
-#define PortConf_PE5_PIN_MODE_CHANGE	   (Port_changeable) CHANGEABLE
-#define PortConf_PF0_PIN_MODE_CHANGE	   (Port_changeable) CHANGEABLE
-#define PortConf_PF1_PIN_MODE_CHANGE	   (Port_changeable) CHANGEABLE
-#define PortConf_PF2_PIN_MODE_CHANGE	   (Port_changeable) CHANGEABLE
-#define PortConf_PF3_PIN_MODE_CHANGE	   (Port_changeable) CHANGEABLE
-#define PortConf_PF4_PIN_MODE_CHANGE	   (Port_changeable) CHANGEABLE
+#define PortConf_PA0_PIN_MODE_CHANGE	   (Port_changeable) NOT_CHANGEABLE
+#define PortConf_PA1_PIN_MODE_CHANGE	   (Port_changeable) NOT_CHANGEABLE
+#define PortConf_PA2_PIN_MODE_CHANGE	   (Port_changeable) NOT_CHANGEABLE
+#define PortConf_PA3_PIN_MODE_CHANGE	   (Port_changeable) NOT_CHANGEABLE
+#define PortConf_PA4_PIN_MODE_CHANGE	   (Port_changeable) NOT_CHANGEABLE
+#define PortConf_PA5_PIN_MODE_CHANGE	   (Port_changeable) NOT_CHANGEABLE
+#define PortConf_PA6_PIN_MODE_CHANGE	   (Port_changeable) NOT_CHANGEABLE
+#define PortConf_PA7_PIN_MODE_CHANGE	   (Port_changeable) NOT_CHANGEABLE
+#define PortConf_PB0_PIN_MODE_CHANGE	   (Port_changeable) NOT_CHANGEABLE
+#define PortConf_PB1_PIN_MODE_CHANGE	   (Port_changeable) NOT_CHANGEABLE
+#define PortConf_PB2_PIN_MODE_CHANGE	   (Port_changeable) NOT_CHANGEABLE
+#define PortConf_PB3_PIN_MODE_CHANGE	   (Port_changeable) NOT_CHANGEABLE
+#define PortConf_PB4_PIN_MODE_CHANGE	   (Port_changeable) NOT_CHANGEABLE
+#define PortConf_PB5_PIN_MODE_CHANGE	   (Port_changeable) NOT_CHANGEABLE
+#define PortConf_PB6_PIN_MODE_CHANGE	   (Port_changeable) NOT_CHANGEABLE
+#define PortConf_PB7_PIN_MODE_CHANGE	   (Port_changeable) NOT_CHANGEABLE
+#define PortConf_PC4_PIN_MODE_CHANGE	   (Port_changeable) NOT_CHANGEABLE
+#define PortConf_PC5_PIN_MODE_CHANGE	   (Port_changeable) NOT_CHANGEABLE
+#define PortConf_PC6_PIN_MODE_CHANGE	   (Port_changeable) NOT_CHANGEABLE
+#define PortConf_PC7_PIN_MODE_CHANGE	   (Port_changeable) NOT_CHANGEABLE
+#define PortConf_PD0_PIN_MODE_CHANGE	   (Port_changeable) NOT_CHANGEABLE
+#define PortConf_PD1_PIN_MODE_CHANGE	   (Port_changeable) NOT_CHANGEABLE
+#define PortConf_PD2_PIN_MODE_CHANGE	   (Port_changeable) NOT_CHANGEABLE
+#define PortConf_PD3_PIN_MODE_CHANGE	   (Port_changeable) NOT_CHANGEABLE
+#define PortConf_PD4_PIN_MODE_CHANGE	   (Port_changeable) NOT_CHANGEABLE
+#define PortConf_PD5_PIN_MODE_CHANGE	   (Port_changeable) NOT_CHANGEABLE
+#define PortConf_PD6_PIN_MODE_CHANGE	   (Port_changeable) NOT_CHANGEABLE
+#define PortConf_PD7_PIN_MODE_CHANGE	   (Port_changeable) NOT_CHANGEABLE
+#define PortConf_PE0_PIN_MODE_CHANGE	   (Port_changeable) NOT_CHANGEABLE
+#define PortConf_PE1_PIN_MODE_CHANGE	   (Port_changeable) NOT_CHANGEABLE
+#define PortConf_PE2_PIN_MODE_CHANGE	   (Port_changeable) NOT_CHANGEABLE
+#define PortConf_PE3_PIN_MODE_CHANGE	   (Port_changeable) NOT_CHANGEABLE
+#define PortConf_PE4_PIN_MODE_CHANGE	   (Port_changeable) NOT_CHANGEABLE
+#define PortConf_PE5_PIN_MODE_CHANGE	   (Port_changeable) NOT_CHANGEABLE
+#define PortConf_PF0_PIN_MODE_CHANGE	   (Port_changeable) NOT_CHANGEABLE
+#define PortConf_PF1_PIN_MODE_CHANGE	   (Port_changeable) NOT_CHANGEABLE
+#define PortConf_PF2_PIN_MODE_CHANGE	   (Port_changeable) NOT_CHANGEABLE
+#define PortConf_PF3_PIN_MODE_CHANGE	   (Port_changeable) NOT_CHANGEABLE
+#define PortConf_PF4_PIN_MODE_CHANGE	   (Port_changeable) NOT_CHANGEABLE
 
 #endif /* PORT_CFG_H */

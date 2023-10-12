@@ -68,9 +68,6 @@
 	#error "The SW version of Port_Cfg.h does not match the expected version"
 #endif
 
-/* Registers Header File*/
-#include "Port_Regs.h"
-
 /* Non AUTOSAR files */
 #include "Common_Macros.h"
 
@@ -252,23 +249,6 @@ void Port_SetPinMode(Port_PinType Pin, Port_PinModeType Mode);
 /*******************************************************************************
  *                      Definitions used in Module                             *
  *******************************************************************************/
-/* PORTs names*/
-#define PORTA					  (uint8)0
-#define PORTB					  (uint8)1
-#define PORTC					  (uint8)2
-#define PORTD					  (uint8)3
-#define PORTE					  (uint8)4
-#define PORTF					  (uint8)5
-
-/* PINs numbers*/
-#define PIN0					  (uint8)0
-#define PIN1					  (uint8)1
-#define PIN2					  (uint8)2
-#define PIN3					  (uint8)3
-#define PIN4					  (uint8)4
-#define PIN5					  (uint8)5
-#define PIN6					  (uint8)6
-#define PIN7					  (uint8)7
 
 /* Definition for Mode IDs */
 #define GPIO_MODE_ID			  (0U) /* GPIO */
