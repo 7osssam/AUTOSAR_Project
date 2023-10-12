@@ -201,10 +201,10 @@
 #define PortConf_PE4_PIN_DIRECTION		   (Port_PinDirectionType) PORT_PIN_IN
 #define PortConf_PE5_PIN_DIRECTION		   (Port_PinDirectionType) PORT_PIN_IN
 #define PortConf_PF0_PIN_DIRECTION		   (Port_PinDirectionType) PORT_PIN_IN
-#define PortConf_PF1_PIN_DIRECTION		   (Port_PinDirectionType) PORT_PIN_OUT /* LED1 */
-#define PortConf_PF2_PIN_DIRECTION		   (Port_PinDirectionType) PORT_PIN_OUT /* LED2 */
-#define PortConf_PF3_PIN_DIRECTION		   (Port_PinDirectionType) PORT_PIN_OUT /* LED3 */
-#define PortConf_PF4_PIN_DIRECTION		   (Port_PinDirectionType) PORT_PIN_IN
+#define PortConf_PF1_PIN_DIRECTION		   (Port_PinDirectionType) PORT_PIN_OUT /* LED */
+#define PortConf_PF2_PIN_DIRECTION		   (Port_PinDirectionType) PORT_PIN_OUT /* LED */
+#define PortConf_PF3_PIN_DIRECTION		   (Port_PinDirectionType) PORT_PIN_OUT /* LED */
+#define PortConf_PF4_PIN_DIRECTION		   (Port_PinDirectionType) PORT_PIN_IN	/* SW1 */
 
 /* 
  * PORT Configured Pin Modes 
