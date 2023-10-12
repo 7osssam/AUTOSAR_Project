@@ -9,7 +9,7 @@
  ********************************************************************/
 
 #include "Port.h"
-#include "Port_Regs.h"
+#include "Peripheral_Regs.h"
 
 #if (PORT_DEV_ERROR_DETECT == STD_ON)
 
@@ -24,13 +24,32 @@
 
 #endif
 
+/************************************************************************************
+ * 								Private Macros										*
+ ************************************************************************************/
+
 /* Number defined by the TM4C123GH6PM MCU creators to unlock GPIO Commit Register */
-#define UNLOCK_GPIOCR	((uint32)0x4C4F434B)
-#define FIRST_BYTE_MASK ((uint32)0x0000000F)
+#define UNLOCK_GPIOCR ((uint32)0x4C4F434B)
 
+/* Mask of the 4 bits of the PMCx bits in the GPIOAFSEL register */
+#define BYTE_MASK	  ((uint32)0x0000000F)
+
+/* Macros to write value to the PMCx bits in the GPIOAFSEL register */
 #define WRITE_PMCx_VALUE(PORT, BIT, VALUE) \
-	(*GPIOPCTL[PORT] = ((*GPIOPCTL[PORT] & ~(FIRST_BYTE_MASK << (BIT * 4))) | (VALUE << (BIT * 4))))
+	(*GPIOPCTL[PORT] = ((*GPIOPCTL[PORT] & ~(BYTE_MASK << (BIT * 4))) | (VALUE << (BIT * 4))))
 
+/************************************************************************************
+ * 								Private Functions									*
+ ************************************************************************************/
+
+/************************************************************************************
+ * Description : The function GPIO_unlock unlocks a specific GPIO pin on a given port.
+ * 
+ * @param port The port parameter is the number of the GPIO port that you want to unlock. It is
+ * typically represented as a number from 0 to 7, where each number corresponds to a specific GPIO port
+ * on the microcontroller.
+ * @param pin The pin number of the GPIO port that needs to be unlocked.
+ ************************************************************************************/
 static void GPIO_unlock(uint8 port, uint8 pin)
 {
 	/* Unlock the GPIO_CR register */
@@ -39,19 +58,28 @@ static void GPIO_unlock(uint8 port, uint8 pin)
 	SET_BIT(*GPIOCR[port], pin);
 }
 
+/************************************************************************************
+ * Description : The function GPIO_clk_enable enables the clock for a given port in C.
+ * 
+ * @param port The parameter "port" is a uint8 variable that represents the port number for which the
+ * clock needs to be enabled.
+ ************************************************************************************/
 static void GPIO_clk_enable(uint8 port)
 {
 	/* Enable the clock for the given port */
 
-	//SET_MASK(RCGCGPIO, BIT(Port_ConfigPtr[i].Port_Number));
+	//SET_MASK(RCGCGPIO, BIT(g_Port_ConfigPtr[ID].Port_Number));
 	SET_MASK(RCGCGPIO, BIT(port));
 
 	/* delay to make sure that the clock is enabled */
 	volatile uint32 delay = RCGCGPIO;
 }
 
-STATIC const Port_ConfigPins* Port_ConfigPtr = NULL_PTR;
-STATIC uint8				  Port_Status = PORT_NOT_INITIALIZED;
+/************************************************************************************
+ * 								Global Variables									*
+ ************************************************************************************/
+STATIC const Port_ConfigPins* g_Port_ConfigPtr = NULL_PTR;
+STATIC uint8				  g_Port_Status = PORT_NOT_INITIALIZED;
 
 /************************************************************************************
 * Service Name		: Port_Init
@@ -66,223 +94,142 @@ STATIC uint8				  Port_Status = PORT_NOT_INITIALIZED;
 *              			- Setup the direction of the pin
 *              			- Setup the mode of the pin
 *              			- Provide initial value for o/p pin
-*              			- Setup the internal resistor for i/p pin
+*              			- Setup the internal resistor for ID/p pin
 ************************************************************************************/
 void Port_Init(const Port_ConfigType* ConfigPtr)
 {
-	/* point to the required Port Registers base address */
-	//volatile uint32* Port_GPIO_ptr = NULL_PTR;
-	boolean error = FALSE;
-
 #if (PORT_DEV_ERROR_DETECT == STD_ON)
 	/* check if the input configuration pointer is not a NULL_PTR */
 	if (NULL_PTR == ConfigPtr)
 	{
 		Det_ReportError(PORT_MODULE_ID, PORT_INSTANCE_ID, PORT_INIT_SID, PORT_E_PARAM_CONFIG);
-		error = TRUE;
 	}
 	else
 #endif
-		/* In-case there are no errors */
-		if (FALSE == error)
+	/* In-case there are no errors */
+	{
+		/* Save the PB configuration structure pointer in a global pointer so that it can be used by
+		 * other functions to read the PB configuration structures and point to  
+		 * the first Port_ConfigPins structure --> Port_Configuration.Pins[0]*/
+		g_Port_ConfigPtr = ConfigPtr->Pins;
+
+		/* Loop through all the pins in the Pins structure */
+		for (uint8 ID = STD_LOW; ID < PORT_CONFIGURED_PINS; ID++)
 		{
-			/* address of the first Pins structure --> Pins[0] */
-			/* point to the first Port_ConfigPins structure --> Port_Configuration.Pins[0] */
-			Port_ConfigPtr = ConfigPtr->Pins;
-			uint8 i = STD_LOW;
-			for (i = 0; i < PORT_CONFIGURED_PINS; i++)
+			/**************************** Clock Enable ********************************/
+			GPIO_clk_enable(g_Port_ConfigPtr[ID].Port_Number);
+
+			/**************************** Unlock GPIOCR *******************************/
+			/* Unlock GPIOCR for PD7 or PF0 */
+			if ((PORTF == g_Port_ConfigPtr[ID].Port_Number && PIN0 == g_Port_ConfigPtr[ID].Pin_Number) ||
+				(PORTD == g_Port_ConfigPtr[ID].Port_Number && PIN7 == g_Port_ConfigPtr[ID].Pin_Number))
 			{
-				/**************************** Clock Enable ********************************/
-				GPIO_clk_enable(Port_ConfigPtr[i].Port_Number);
+				GPIO_unlock(g_Port_ConfigPtr[ID].Port_Number, g_Port_ConfigPtr[ID].Pin_Number);
+			}
+			/* PC0 to PC3 - JTAG pins */
+			else if (PORTC == g_Port_ConfigPtr[ID].Port_Number && PIN3 >= g_Port_ConfigPtr[ID].Pin_Number)
+			{
+				/* Do Nothing ...  this is the JTAG pins */
+			}
+			else
+			{
+				/* Do Nothing ... No need to unlock the commit register for this pin */
+			}
 
-				/**************************** Unlock GPIOCR *******************************/
-				/* Unlock GPIOCR for PD7 or PF0 */
-				if ((PORTF == Port_ConfigPtr[i].Port_Number && PIN0 == Port_ConfigPtr[i].Pin_Number) ||
-					(PORTD == Port_ConfigPtr[i].Port_Number && PIN7 == Port_ConfigPtr[i].Pin_Number))
-				{
-					GPIO_unlock(Port_ConfigPtr[i].Port_Number, Port_ConfigPtr[i].Pin_Number);
-				}
-				/* PC0 to PC3 */
-				else if (PORTC == Port_ConfigPtr[i].Port_Number && PIN0 >= Port_ConfigPtr[i].Port_Number)
-				{
-					/* Do Nothing ...  this is the JTAG pins */
-				}
-				else
-				{
-					/* Do Nothing ... No need to unlock the commit register for this pin */
-				}
+			/**************************** Direction ***********************************/
+			if (PORT_PIN_OUT == (Port_PinDirectionType)g_Port_ConfigPtr[ID].Pin_Direction)
+			{
+				SET_BIT(*GPIODIR[g_Port_ConfigPtr[ID].Port_Number], g_Port_ConfigPtr[ID].Pin_Number);
 
-				/**************************** Direction ***********************************/
-				if (PORT_PIN_OUT == (Port_PinDirectionType)Port_ConfigPtr[i].Pin_Direction)
+				/**************************** Initial Value *******************************/
+				if (STD_HIGH == g_Port_ConfigPtr[ID].Pin_Initial_Value)
 				{
-					SET_BIT(*GPIODIR[Port_ConfigPtr[i].Port_Number], Port_ConfigPtr[i].Pin_Number);
-
-					/**************************** Initial Value *******************************/
-					if (STD_HIGH == Port_ConfigPtr[i].Pin_Initial_Value)
-					{
-						SET_BIT(*GPIODATA[Port_ConfigPtr[i].Port_Number], Port_ConfigPtr[i].Pin_Number);
-					}
-					else if (STD_LOW == Port_ConfigPtr[i].Pin_Initial_Value)
-					{
-						CLEAR_BIT(*GPIODATA[Port_ConfigPtr[i].Port_Number], Port_ConfigPtr[i].Pin_Number);
-					}
-					else
-					{
-						/* Do Nothing */
-					}
+					SET_BIT(*GPIODATA[g_Port_ConfigPtr[ID].Port_Number], g_Port_ConfigPtr[ID].Pin_Number);
 				}
-				else if (PORT_PIN_IN == (Port_PinDirectionType)Port_ConfigPtr[i].Pin_Direction)
+				else if (STD_LOW == g_Port_ConfigPtr[ID].Pin_Initial_Value)
 				{
-					CLEAR_BIT(*GPIODIR[Port_ConfigPtr[i].Port_Number], Port_ConfigPtr[i].Pin_Number);
-
-					//**************************** Resistor ************************************
-					if (Port_ConfigPtr[i].Pin_Resistor == PULL_UP)
-					{
-						/* Enable the internal pull up resistor for the selected pin */
-						SET_BIT(*GPIOPUR[Port_ConfigPtr[i].Port_Number], Port_ConfigPtr[i].Pin_Number);
-					}
-					else if (Port_ConfigPtr[i].Pin_Resistor == PULL_DOWN)
-					{
-						SET_BIT(*GPIOPDR[Port_ConfigPtr[i].Port_Number], Port_ConfigPtr[i].Pin_Number);
-					}
-					else
-					{
-						CLEAR_BIT(*GPIOPUR[Port_ConfigPtr[i].Port_Number], Port_ConfigPtr[i].Pin_Number);
-						CLEAR_BIT(*GPIOPDR[Port_ConfigPtr[i].Port_Number], Port_ConfigPtr[i].Pin_Number);
-					}
+					CLEAR_BIT(*GPIODATA[g_Port_ConfigPtr[ID].Port_Number], g_Port_ConfigPtr[ID].Pin_Number);
 				}
 				else
 				{
 					/* Do Nothing */
 				}
+			}
+			else if (PORT_PIN_IN == (Port_PinDirectionType)g_Port_ConfigPtr[ID].Pin_Direction)
+			{
+				CLEAR_BIT(*GPIODIR[g_Port_ConfigPtr[ID].Port_Number], g_Port_ConfigPtr[ID].Pin_Number);
 
-				//**************************** Mode Select ********************************
-
-				//if (PORT_GPIO_MODE == (Port_PinMode)Port_ConfigPtr[i].Pin_Mode)
-				//{
-				//	/* Disable analog mode */
-				//	CLEAR_BIT(*GPIOAMSEL[Port_ConfigPtr[i].Port_Number], Port_ConfigPtr[i].Pin_Number);
-				//	/* Disable alternate function */
-				//	CLEAR_BIT(*GPIOAFSEL[Port_ConfigPtr[i].Port_Number], Port_ConfigPtr[i].Pin_Number);
-				//	/* Clear PMCx bits for the selected pin to use it as GPIO pin */
-				//	WRITE_PMCx_VALUE(Port_ConfigPtr[i].Port_Number, Port_ConfigPtr[i].Pin_Number, STD_LOW);
-				//	/* Enable digital mode */
-				//	SET_BIT(*GPIODEN[Port_ConfigPtr[i].Port_Number], Port_ConfigPtr[i].Pin_Number);
-				//}
-				//else if ((ADC_MODE_ID == (Port_PinMode)Port_ConfigPtr[i].Pin_Mode) ||
-				//		 (ANALOG_COMPARATOR_MODE_ID == (Port_PinMode)Port_ConfigPtr[i].Pin_Mode) ||
-				//		 (ANALOG_MODE_ID == (Port_PinMode)Port_ConfigPtr[i].Pin_Mode))
-				//{
-				//	/* Enable analog mode */
-				//	SET_BIT(*GPIOAMSEL[Port_ConfigPtr[i].Port_Number], Port_ConfigPtr[i].Pin_Number);
-				//	/* Disable alternate function */
-				//	CLEAR_BIT(*GPIOAFSEL[Port_ConfigPtr[i].Port_Number], Port_ConfigPtr[i].Pin_Number);
-				//	/* Clear PMCx bits for the selected pin to use it as GPIO pin */
-				//	WRITE_PMCx_VALUE(Port_ConfigPtr[i].Port_Number, Port_ConfigPtr[i].Pin_Number, STD_LOW);
-				//	/* Disable digital mode */
-				//	CLEAR_BIT(*GPIODEN[Port_ConfigPtr[i].Port_Number], Port_ConfigPtr[i].Pin_Number);
-				//}
-				//else
-				//{
-				//	/* Disable analog mode */
-				//	CLEAR_BIT(*GPIOAMSEL[Port_ConfigPtr[i].Port_Number], Port_ConfigPtr[i].Pin_Number);
-				//	/* Enable alternate function */
-				//	SET_BIT(*GPIOAFSEL[Port_ConfigPtr[i].Port_Number], Port_ConfigPtr[i].Pin_Number);
-				//	/* Set PMCx bits for the selected pin to use it as the selected alternate function */
-				//	WRITE_PMCx_VALUE(Port_ConfigPtr[i].Port_Number, Port_ConfigPtr[i].Pin_Number,
-				//					 Port_ConfigPtr[i].Pin_Mode);
-				//	/* Enable digital mode */
-				//	SET_BIT(*GPIODEN[Port_ConfigPtr[i].Port_Number], Port_ConfigPtr[i].Pin_Number);
-				//}
-
-				//!! testing
-				if ((PORT_GPIO_MODE == (Port_PinMode)Port_ConfigPtr[i].Pin_Mode) ||
-					(ADC_MODE_ID == (Port_PinMode)Port_ConfigPtr[i].Pin_Mode) ||
-					(ANALOG_COMPARATOR_MODE_ID == (Port_PinMode)Port_ConfigPtr[i].Pin_Mode) ||
-					(ANALOG_MODE_ID == (Port_PinMode)Port_ConfigPtr[i].Pin_Mode))
+				//**************************** Resistor ************************************
+				if (g_Port_ConfigPtr[ID].Pin_Resistor == PULL_UP)
 				{
-					/* Disable alternate function */
-					CLEAR_BIT(*GPIOAFSEL[Port_ConfigPtr[i].Port_Number], Port_ConfigPtr[i].Pin_Number);
-					/* Clear PMCx bits for the selected pin to use it as GPIO pin */
-					WRITE_PMCx_VALUE(Port_ConfigPtr[i].Port_Number, Port_ConfigPtr[i].Pin_Number, STD_LOW);
-
-					if (PORT_GPIO_MODE == (Port_PinMode)Port_ConfigPtr[i].Pin_Mode)
-					{
-						/* Disable analog mode */
-						CLEAR_BIT(*GPIOAMSEL[Port_ConfigPtr[i].Port_Number], Port_ConfigPtr[i].Pin_Number);
-						/* Enable digital mode */
-						SET_BIT(*GPIODEN[Port_ConfigPtr[i].Port_Number], Port_ConfigPtr[i].Pin_Number);
-					}
-					else
-					{
-						/* Enable analog mode */
-						SET_BIT(*GPIOAMSEL[Port_ConfigPtr[i].Port_Number], Port_ConfigPtr[i].Pin_Number);
-						/* Disable digital mode */
-						CLEAR_BIT(*GPIODEN[Port_ConfigPtr[i].Port_Number], Port_ConfigPtr[i].Pin_Number);
-					}
+					/* Enable the internal pull up resistor for the selected pin */
+					SET_BIT(*GPIOPUR[g_Port_ConfigPtr[ID].Port_Number], g_Port_ConfigPtr[ID].Pin_Number);
+				}
+				else if (g_Port_ConfigPtr[ID].Pin_Resistor == PULL_DOWN)
+				{
+					SET_BIT(*GPIOPDR[g_Port_ConfigPtr[ID].Port_Number], g_Port_ConfigPtr[ID].Pin_Number);
 				}
 				else
 				{
-					/* Enable alternate function */
-					SET_BIT(*GPIOAFSEL[Port_ConfigPtr[i].Port_Number], Port_ConfigPtr[i].Pin_Number);
-					/* Set PMCx bits for the selected pin to use it as the selected alternate function */
-					WRITE_PMCx_VALUE(Port_ConfigPtr[i].Port_Number, Port_ConfigPtr[i].Pin_Number,
-									 Port_ConfigPtr[i].Pin_Mode);
-
-					/* Disable analog mode */
-					CLEAR_BIT(*GPIOAMSEL[Port_ConfigPtr[i].Port_Number], Port_ConfigPtr[i].Pin_Number);
-					/* Enable digital mode */
-					SET_BIT(*GPIODEN[Port_ConfigPtr[i].Port_Number], Port_ConfigPtr[i].Pin_Number);
+					CLEAR_BIT(*GPIOPUR[g_Port_ConfigPtr[ID].Port_Number], g_Port_ConfigPtr[ID].Pin_Number);
+					CLEAR_BIT(*GPIOPDR[g_Port_ConfigPtr[ID].Port_Number], g_Port_ConfigPtr[ID].Pin_Number);
 				}
 			}
+			else
+			{
+				/* Do Nothing */
+			}
 
-			/*
-		 	* Set the module state to initialized and point to the PB configuration structure using a
-		 	* global pointer. This global pointer is global to be used by other functions to read the
-		 	* PB configuration structures
+			//**************************** Mode Select ********************************
+			/* Check if the pin is a GPIO pin or analog pin */
+			if ((PORT_GPIO_MODE == (Port_PinMode)g_Port_ConfigPtr[ID].Pin_Mode) ||
+				(ADC_MODE_ID == (Port_PinMode)g_Port_ConfigPtr[ID].Pin_Mode) ||
+				(ANALOG_COMPARATOR_MODE_ID == (Port_PinMode)g_Port_ConfigPtr[ID].Pin_Mode) ||
+				(ANALOG_MODE_ID == (Port_PinMode)g_Port_ConfigPtr[ID].Pin_Mode))
+			{
+				/* Disable alternate function */
+				CLEAR_BIT(*GPIOAFSEL[g_Port_ConfigPtr[ID].Port_Number], g_Port_ConfigPtr[ID].Pin_Number);
+
+				/* Clear PMCx bits for the selected pin to use it as GPIO pin */
+				WRITE_PMCx_VALUE(g_Port_ConfigPtr[ID].Port_Number, g_Port_ConfigPtr[ID].Pin_Number, STD_LOW);
+
+				/************************* GPIO Mode **********************************/
+				if (PORT_GPIO_MODE == (Port_PinMode)g_Port_ConfigPtr[ID].Pin_Mode)
+				{
+					/* Disable analog mode */
+					CLEAR_BIT(*GPIOAMSEL[g_Port_ConfigPtr[ID].Port_Number], g_Port_ConfigPtr[ID].Pin_Number);
+					/* Enable digital mode */
+					SET_BIT(*GPIODEN[g_Port_ConfigPtr[ID].Port_Number], g_Port_ConfigPtr[ID].Pin_Number);
+				}
+				/************************* Analog Mode **********************************/
+				else
+				{
+					/* Enable analog mode */
+					SET_BIT(*GPIOAMSEL[g_Port_ConfigPtr[ID].Port_Number], g_Port_ConfigPtr[ID].Pin_Number);
+					/* Disable digital mode */
+					CLEAR_BIT(*GPIODEN[g_Port_ConfigPtr[ID].Port_Number], g_Port_ConfigPtr[ID].Pin_Number);
+				}
+			}
+			else /* alternate function pin */
+			{
+				/* Enable alternate function */
+				SET_BIT(*GPIOAFSEL[g_Port_ConfigPtr[ID].Port_Number], g_Port_ConfigPtr[ID].Pin_Number);
+				/* Set PMCx bits for the selected pin to use it as the selected alternate function */
+				WRITE_PMCx_VALUE(g_Port_ConfigPtr[ID].Port_Number, g_Port_ConfigPtr[ID].Pin_Number,
+								 g_Port_ConfigPtr[ID].Pin_Mode);
+				/* Disable analog mode */
+				CLEAR_BIT(*GPIOAMSEL[g_Port_ConfigPtr[ID].Port_Number], g_Port_ConfigPtr[ID].Pin_Number);
+				/* Enable digital mode */
+				SET_BIT(*GPIODEN[g_Port_ConfigPtr[ID].Port_Number], g_Port_ConfigPtr[ID].Pin_Number);
+			}
+		}
+
+		/*
+		 	* Set the module state to initialized
 		 	*/
-			Port_Status = PORT_INITIALIZED;
-		}
-		else
-		{
-			/* Do Nothing */
-		}
-}
-
-/************************************************************************************
-void Gpio_Init(const GpioConfiguration* const cnfg_table, uint8_t cnfgTable_size)
-{
-	for (uint8_t i = 0; i < cnfgTable_size; i++)
-	{
-		//enable clock to the specific port
-		RCGCGPIO = (1 << cnfg_table[i].port);
-
-		//set direction of the pin
-		if (cnfg_table[i].direction == gpio_output)
-			//pin is output pin
-			*GpioDataDIR[cnfg_table[i].port] |= (1 << cnfg_table[i].pin);
-		else
-			//pin is input
-			*GpioDataDIR[cnfg_table[i].port] &= ~(1 << cnfg_table[i].pin);
-
-		//digital enable for the pin in this port
-		*GpioDEN[cnfg_table[i].port] |= (1 << cnfg_table[i].pin);
-
-		//check if pull up resistor is enabled
-		if (cnfg_table[i].resistor == gpio_pullupenable)
-			*GpioPUR[cnfg_table[i].port] |= (1 << cnfg_table[i].pin);
-		else
-			*GpioPUR[cnfg_table[i].port] &= ~(1 << cnfg_table[i].pin);
-
-		//set state of the pin
-		if (cnfg_table[i].state == gpio_high)
-			//set pin high
-			*GpioDataReg[cnfg_table[i].port] |= (1 << cnfg_table[i].pin);
-		else
-			*GpioDataReg[cnfg_table[i].port] |= (1 << cnfg_table[i].pin);
+		g_Port_Status = PORT_INITIALIZED;
 	}
 }
-************************************************************************************/
 
 /************************************************************************************
 * Service Name		: Port_SetPinDirection
@@ -298,8 +245,68 @@ void Gpio_Init(const GpioConfiguration* const cnfg_table, uint8_t cnfgTable_size
 #if (STD_ON == PORT_SET_PIN_DIRECTION_API)
 void Port_SetPinDirection(Port_PinType Pin, Port_PinDirectionType Direction)
 {
+	/* Local variable to hold the error status */
+	boolean error = FALSE;
+
+	#if (PORT_DEV_ERROR_DETECT == STD_ON)
+	/* check if the input pin number is within the valid range */
+	if (Pin >= PORT_CONFIGURED_PINS)
+	{
+		Det_ReportError(PORT_MODULE_ID, PORT_INSTANCE_ID, PORT_SET_PIN_DIRECTION_SID, PORT_E_PARAM_PIN);
+		error = TRUE;
+	}
+	else
+	{
+		/* Do Nothing */
+	}
+
+	/* Check if the Port driver is initialized before using any API */
+	if (PORT_NOT_INITIALIZED == g_Port_Status)
+	{
+		Det_ReportError(PORT_MODULE_ID, PORT_INSTANCE_ID, PORT_SET_PIN_DIRECTION_SID, PORT_E_UNINIT);
+		error = TRUE;
+	}
+	else
+	{
+		/* Do Nothing */
+	}
+
+	/* Check if the input pin is not configured as changeable */
+	if (STD_OFF == g_Port_ConfigPtr[Pin].Pin_Direction_Changeable)
+	{
+		Det_ReportError(PORT_MODULE_ID, PORT_INSTANCE_ID, PORT_SET_PIN_DIRECTION_SID,
+						PORT_E_DIRECTION_UNCHANGEABLE);
+		error = TRUE;
+	}
+	else
+	{
+		/* Do Nothing */
+	}
+	#endif
+
+	/* In-case there are no errors */
+	if (FALSE == error)
+	{
+		/**************************** Direction ***********************************/
+		if (PORT_PIN_OUT == Direction)
+		{
+			SET_BIT(*GPIODIR[g_Port_ConfigPtr[Pin].Port_Number], g_Port_ConfigPtr[Pin].Pin_Number);
+		}
+		else if (PORT_PIN_IN == Direction)
+		{
+			CLEAR_BIT(*GPIODIR[g_Port_ConfigPtr[Pin].Port_Number], g_Port_ConfigPtr[Pin].Pin_Number);
+		}
+		else
+		{
+			/* Do Nothing */
+		}
+	}
+	else
+	{
+		/* Do Nothing */
+	}
 }
-#endif
+#endif /* PORT_SET_PIN_DIRECTION_API */
 
 /************************************************************************************
 * Service Name		: Port_RefreshPortDirection
@@ -315,8 +322,33 @@ void Port_SetPinDirection(Port_PinType Pin, Port_PinDirectionType Direction)
 ************************************************************************************/
 void Port_RefreshPortDirection(void)
 {
+#if (PORT_DEV_ERROR_DETECT == STD_ON)
+	/* Check if the Port driver is initialized before using any API */
+	if (PORT_NOT_INITIALIZED == g_Port_Status)
+	{
+		Det_ReportError(PORT_MODULE_ID, PORT_INSTANCE_ID, PORT_REFRESH_PORT_DIRECTION_SID, PORT_E_UNINIT);
+	}
+	else
+#endif
+	{
+		for (uint8 ID = STD_LOW; ID < PORT_CONFIGURED_PINS; ID++)
+		{
+			/**************************** Direction ***********************************/
+			if (PORT_PIN_OUT == g_Port_ConfigPtr[ID].Pin_Direction)
+			{
+				SET_BIT(*GPIODIR[g_Port_ConfigPtr[ID].Port_Number], g_Port_ConfigPtr[ID].Pin_Number);
+			}
+			else if (PORT_PIN_IN == g_Port_ConfigPtr[ID].Pin_Direction)
+			{
+				CLEAR_BIT(*GPIODIR[g_Port_ConfigPtr[ID].Port_Number], g_Port_ConfigPtr[ID].Pin_Number);
+			}
+			else
+			{
+				/* Do Nothing */
+			}
+		}
+	}
 }
-
 /************************************************************************************
 * Service Name		: Port_GetVersionInfo
 * Service ID[hex]	: 0x03
@@ -331,6 +363,27 @@ void Port_RefreshPortDirection(void)
 ************************************************************************************/
 void Port_GetVersionInfo(Std_VersionInfoType* versioninfo)
 {
+#if (PORT_DEV_ERROR_DETECT == STD_ON)
+	/* Check if input pointer is not Null pointer */
+	if (NULL_PTR == versioninfo)
+	{
+		/* Report to DET  */
+		Det_ReportError(PORT_MODULE_ID, PORT_INSTANCE_ID, PORT_GET_VERSION_INFO_SID, PORT_E_PARAM_POINTER);
+	}
+	else
+#endif /* (PORT_DEV_ERROR_DETECT == STD_ON) */
+	{
+		/* Copy the vendor Id */
+		versioninfo->vendorID = (uint16)PORT_VENDOR_ID;
+		/* Copy the module Id */
+		versioninfo->moduleID = (uint16)PORT_MODULE_ID;
+		/* Copy Software Major Version */
+		versioninfo->sw_major_version = (uint8)PORT_SW_MAJOR_VERSION;
+		/* Copy Software Minor Version */
+		versioninfo->sw_minor_version = (uint8)PORT_SW_MINOR_VERSION;
+		/* Copy Software Patch Version */
+		versioninfo->sw_patch_version = (uint8)PORT_SW_PATCH_VERSION;
+	}
 }
 
 /************************************************************************************
@@ -348,8 +401,101 @@ void Port_GetVersionInfo(Std_VersionInfoType* versioninfo)
 #if (STD_ON == PORT_SET_PIN_MODE_API)
 void Port_SetPinMode(Port_PinType Pin, Port_PinModeType Mode)
 {
+	/* Local variable to hold the error status */
+	boolean error = FALSE;
+	#if (PORT_DEV_ERROR_DETECT == STD_ON)
+	/* check if the input pin number is within the valid range */
+	if (Pin >= PORT_CONFIGURED_PINS)
+	{
+		Det_ReportError(PORT_MODULE_ID, PORT_INSTANCE_ID, PORT_SET_PIN_MODE_SID, PORT_E_PARAM_PIN);
+		error = TRUE;
+	}
+	else
+	{
+		/* Do Nothing */
+	}
+
+	/* Check if the input mode is within the valid range */
+	if (GROUP_14_MODE_ID < Mode || INVALID_MODE_ID == Mode)
+	{
+		Det_ReportError(PORT_MODULE_ID, PORT_INSTANCE_ID, PORT_SET_PIN_MODE_SID, PORT_E_PARAM_INVALID_MODE);
+		error = TRUE;
+	}
+	else
+	{
+		/* Do Nothing */
+	}
+
+	/* Check if the input pin is not configured as changeable */
+	if (STD_OFF == g_Port_ConfigPtr[Pin].Pin_Mode_Changeable)
+	{
+		Det_ReportError(PORT_MODULE_ID, PORT_INSTANCE_ID, PORT_SET_PIN_MODE_SID, PORT_E_MODE_UNCHANGEABLE);
+		error = TRUE;
+	}
+	else
+	{
+		/* Do Nothing */
+	}
+
+	/* Check if the Port driver is initialized before using any API */
+	if (PORT_NOT_INITIALIZED == g_Port_Status)
+	{
+		Det_ReportError(PORT_MODULE_ID, PORT_INSTANCE_ID, PORT_SET_PIN_MODE_SID, PORT_E_UNINIT);
+		error = TRUE;
+	}
+	else
+	{
+		/* Do Nothing */
+	}
+	#endif
+
+	/* In-case there are no errors */
+	if (FALSE == error)
+	{ /* Check if the pin is a GPIO pin or analog pin */
+		if ((PORT_GPIO_MODE == Mode) || (ADC_MODE_ID == Mode) || (ANALOG_COMPARATOR_MODE_ID == Mode) ||
+			(ANALOG_MODE_ID == Mode))
+		{
+			/* Disable alternate function */
+			CLEAR_BIT(*GPIOAFSEL[g_Port_ConfigPtr[Pin].Port_Number], g_Port_ConfigPtr[Pin].Pin_Number);
+			/* Clear PMCx bits for the selected pin to use it as GPIO pin */
+			WRITE_PMCx_VALUE(g_Port_ConfigPtr[Pin].Port_Number, g_Port_ConfigPtr[Pin].Pin_Number, STD_LOW);
+
+			/************************* GPIO Mode **********************************/
+			if (PORT_GPIO_MODE == Mode)
+			{
+				/* Disable analog mode */
+				CLEAR_BIT(*GPIOAMSEL[g_Port_ConfigPtr[Pin].Port_Number], g_Port_ConfigPtr[Pin].Pin_Number);
+				/* Enable digital mode */
+				SET_BIT(*GPIODEN[g_Port_ConfigPtr[Pin].Port_Number], g_Port_ConfigPtr[Pin].Pin_Number);
+			}
+			/************************* Analog Mode **********************************/
+			else
+			{
+				/* Enable analog mode */
+				SET_BIT(*GPIOAMSEL[g_Port_ConfigPtr[Pin].Port_Number], g_Port_ConfigPtr[Pin].Pin_Number);
+				/* Disable digital mode */
+				CLEAR_BIT(*GPIODEN[g_Port_ConfigPtr[Pin].Port_Number], g_Port_ConfigPtr[Pin].Pin_Number);
+			}
+		}
+		else /* alternate function pin */
+		{
+			/* Enable alternate function */
+			SET_BIT(*GPIOAFSEL[g_Port_ConfigPtr[Pin].Port_Number], g_Port_ConfigPtr[Pin].Pin_Number);
+			/* Set PMCx bits for the selected pin to use it as the selected alternate function */
+			WRITE_PMCx_VALUE(g_Port_ConfigPtr[Pin].Port_Number, g_Port_ConfigPtr[Pin].Pin_Number,
+							 g_Port_ConfigPtr[Pin].Pin_Mode);
+			/* Disable analog mode */
+			CLEAR_BIT(*GPIOAMSEL[g_Port_ConfigPtr[Pin].Port_Number], g_Port_ConfigPtr[Pin].Pin_Number);
+			/* Enable digital mode */
+			SET_BIT(*GPIODEN[g_Port_ConfigPtr[Pin].Port_Number], g_Port_ConfigPtr[Pin].Pin_Number);
+		}
+	}
+	else
+	{
+		/* Do Nothing */
+	}
 }
-#endif
+#endif /* PORT_SET_PIN_MODE_API */
 
 /************************************************************************************
 *  Service name      : PORT_GetVersionInfo
