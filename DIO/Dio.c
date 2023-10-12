@@ -9,7 +9,7 @@
  ********************************************************************/
 
 #include "Dio.h"
-#include "Dio_Regs.h"
+#include "Peripheral_Regs.h"
 
 #if (DIO_DEV_ERROR_DETECT == STD_ON)
 
@@ -173,8 +173,7 @@ Dio_LevelType Dio_ReadChannel(Dio_ChannelType ChannelId)
 	/* Check if the used channel is within the valid range */
 	if (DIO_CONFIGURED_CHANNLES <= ChannelId)
 	{
-		Det_ReportError(DIO_MODULE_ID, DIO_INSTANCE_ID, DIO_READ_CHANNEL_SID,
-						DIO_E_PARAM_INVALID_CHANNEL_ID);
+		Det_ReportError(DIO_MODULE_ID, DIO_INSTANCE_ID, DIO_READ_CHANNEL_SID, DIO_E_PARAM_INVALID_CHANNEL_ID);
 		error = TRUE;
 	}
 	else
@@ -241,8 +240,7 @@ Dio_PortLevelType Dio_ReadPort(Dio_PortType PortId)
 	/* Check if Invalid port name requested */
 	if (DIO_CONFIGURED_PORTS <= PortId)
 	{
-		Det_ReportError(DIO_MODULE_ID, DIO_INSTANCE_ID, DIO_READ_PORT_SID,
-						DIO_E_PARAM_INVALID_PORT_ID);
+		Det_ReportError(DIO_MODULE_ID, DIO_INSTANCE_ID, DIO_READ_PORT_SID, DIO_E_PARAM_INVALID_PORT_ID);
 		error = TRUE;
 	}
 	else
@@ -295,8 +293,7 @@ void Dio_WritePort(Dio_PortType PortId, Dio_PortLevelType Level)
 	/* Check if Invalid port name requested */
 	if (DIO_CONFIGURED_PORTS <= PortId)
 	{
-		Det_ReportError(DIO_MODULE_ID, DIO_INSTANCE_ID, DIO_READ_PORT_SID,
-						DIO_E_PARAM_INVALID_PORT_ID);
+		Det_ReportError(DIO_MODULE_ID, DIO_INSTANCE_ID, DIO_READ_PORT_SID, DIO_E_PARAM_INVALID_PORT_ID);
 		error = TRUE;
 	}
 	else
@@ -353,8 +350,7 @@ Dio_PortLevelType Dio_ReadChannelGroup(const Dio_ChannelGroupType* ChannelGroupI
 	/* Check if ChannelGroupIdPtr is a NULL_PTR */
 	if (NULL_PTR == ChannelGroupIdPtr)
 	{
-		Det_ReportError(DIO_MODULE_ID, DIO_INSTANCE_ID, DIO_READ_CHANNEL_GROUP_SID,
-						DIO_E_PARAM_POINTER);
+		Det_ReportError(DIO_MODULE_ID, DIO_INSTANCE_ID, DIO_READ_CHANNEL_GROUP_SID, DIO_E_PARAM_POINTER);
 		error = TRUE;
 	}
 	else
@@ -416,8 +412,7 @@ void Dio_WriteChannelGroup(const Dio_ChannelGroupType* ChannelGroupIdPtr, Dio_Po
 	/* Check if ChannelGroupIdPtr is a NULL_PTR */
 	if (NULL_PTR == ChannelGroupIdPtr)
 	{
-		Det_ReportError(DIO_MODULE_ID, DIO_INSTANCE_ID, DIO_WRITE_CHANNEL_GROUP_SID,
-						DIO_E_PARAM_POINTER);
+		Det_ReportError(DIO_MODULE_ID, DIO_INSTANCE_ID, DIO_WRITE_CHANNEL_GROUP_SID, DIO_E_PARAM_POINTER);
 		error = TRUE;
 	}
 	else
@@ -466,8 +461,7 @@ void Dio_GetVersionInfo(Std_VersionInfoType* versioninfo)
 	if (NULL_PTR == versioninfo)
 	{
 		/* Report to DET  */
-		Det_ReportError(DIO_MODULE_ID, DIO_INSTANCE_ID, DIO_GET_VERSION_INFO_SID,
-						DIO_E_PARAM_POINTER);
+		Det_ReportError(DIO_MODULE_ID, DIO_INSTANCE_ID, DIO_GET_VERSION_INFO_SID, DIO_E_PARAM_POINTER);
 	}
 	else
 	#endif /* (DIO_DEV_ERROR_DETECT == STD_ON) */
@@ -528,8 +522,7 @@ Dio_LevelType Dio_FlipChannel(Dio_ChannelType ChannelId)
 	/* Check if the used channel is within the valid range */
 	if (DIO_CONFIGURED_CHANNLES <= ChannelId)
 	{
-		Det_ReportError(DIO_MODULE_ID, DIO_INSTANCE_ID, DIO_FLIP_CHANNEL_SID,
-						DIO_E_PARAM_INVALID_CHANNEL_ID);
+		Det_ReportError(DIO_MODULE_ID, DIO_INSTANCE_ID, DIO_FLIP_CHANNEL_SID, DIO_E_PARAM_INVALID_CHANNEL_ID);
 		error = TRUE;
 	}
 	else

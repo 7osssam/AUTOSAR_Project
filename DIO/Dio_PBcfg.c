@@ -55,15 +55,15 @@ const Dio_ConfigType Dio_Configuration = {
 					.Port_Num = DioConf_LED2_PORT_NUM,
 					.Ch_Num = DioConf_LED2_CHANNEL_NUM,
 				},
-			[DioConf_BUTTON1_CHANNEL_ID_INDEX] =
+			[DioConf_SW1_CHANNEL_ID_INDEX] =
 				{
-					.Port_Num = DioConf_BUTTON1_PORT_NUM,
-					.Ch_Num = DioConf_BUTTON1_CHANNEL_NUM,
+					.Port_Num = DioConf_SW1_PORT_NUM,
+					.Ch_Num = DioConf_SW1_CHANNEL_NUM,
 				},
-			[DioConf_BUTTON2_CHANNEL_ID_INDEX] =
+			[DioConf_SW2_CHANNEL_ID_INDEX] =
 				{
-					.Port_Num = DioConf_BUTTON2_PORT_NUM,
-					.Ch_Num = DioConf_BUTTON2_CHANNEL_NUM,
+					.Port_Num = DioConf_SW2_PORT_NUM,
+					.Ch_Num = DioConf_SW2_CHANNEL_NUM,
 				}
 
 		}
