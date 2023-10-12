@@ -10,7 +10,12 @@
 				"${workspaceFolder}/LIB/**",
 				"${workspaceFolder}/PORT/**",
 				"${workspaceFolder}/DIO/**",
-				"${workspaceFolder}/DET/**"
+				"${workspaceFolder}/DET/**",
+				"${workspaceFolder}/GPT/**",
+				"${workspaceFolder}/LED/**",
+				"${workspaceFolder}/Button/**",
+				"${workspaceFolder}/OS/**",
+				"${workspaceFolder}/APP/**"
 			],
 			"compilerArgs": [
 				"--c99",
@@ -30,7 +35,12 @@
 					"${workspaceFolder}/LIB/",
 					"${workspaceFolder}/PORT/",
 					"${workspaceFolder}/DIO/",
-					"${workspaceFolder}/DET/"
+					"${workspaceFolder}/DET/",
+					"${workspaceFolder}/GPT/",
+					"${workspaceFolder}/LED/",
+					"${workspaceFolder}/Button/",
+					"${workspaceFolder}/OS/",
+					"${workspaceFolder}/APP/"
 				]
 			},
 			"cStandard": "c99",
